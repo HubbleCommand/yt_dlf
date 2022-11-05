@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:yt_dlf/widgets/bottom_navigation_bar_page.dart';
 import 'package:yt_dlf/widgets/download_playlist.dart';
+import 'package:yt_dlf/widgets/edit_playlist.dart';
 
 void main() {
   runApp(const YTDLF());
@@ -31,37 +33,41 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  @override
+  void initState() {
+    super.initState();
+
+    Permission.storage.status.then((value) {
+      if (value != PermissionStatus.granted || value != PermissionStatus.limited) {
+        Permission.storage.request().then((value){
+          Permission.manageExternalStorage.status.then((valueInner) {
+            if (valueInner != PermissionStatus.granted || value != PermissionStatus.limited) {
+              Permission.manageExternalStorage.request().then((valueInner){
+                debugPrint("Storage : ${value} External storage : ${valueInner}");
+              });
+            }
+          });
+        });
+      }
+    });
+  }
+
   static final List<BottomNavigationBarPage> _pages = <BottomNavigationBarPage>[
     BottomNavigationBarPage(
       bottomNavigationBarItem: const BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home',
+        icon: Icon(Icons.download),
+        label: 'Download',
         backgroundColor: Colors.red,
       ),
       pageView: const DownloadPlaylistView(),
     ),
     BottomNavigationBarPage(
       bottomNavigationBarItem: const BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home',
+        icon: Icon(Icons.edit),
+        label: 'Edit',
         backgroundColor: Colors.red,
       ),
-      pageView: const Text(
-        'Coming Soon',
-        style: optionStyle,
-      ),
-    ),
-    BottomNavigationBarPage(
-      bottomNavigationBarItem: const BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home',
-        backgroundColor: Colors.red,
-      ),
-      pageView: const Text(
-        'Coming Soon',
-        style: optionStyle,
-      ),
+      pageView: const EditPlaylistView(),
     ),
   ];
 

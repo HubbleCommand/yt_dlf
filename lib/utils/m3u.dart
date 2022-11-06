@@ -1,13 +1,13 @@
 //Helper class for *.m3u files
-//Will only handle the two accepted standard directives :
-//
+//Will only handle the two accepted standard directives : #EXTM3U and #EXTINF
 // https://en.wikipedia.org/wiki/M3U
+// https://docs.fileformat.com/audio/m3u/
+
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 
-class _PlaylistEntry {
+class PlaylistEntry {
   final String title;
   final String author;
   final String source;
@@ -17,7 +17,7 @@ class _PlaylistEntry {
     return 'title : $title name : $author source : $source';
   }
 
-  _PlaylistEntry({required this.title, required this.author, required this.source});
+  PlaylistEntry({required this.title, required this.author, required this.source});
 }
 
 class M3U {
@@ -25,7 +25,40 @@ class M3U {
   static const String headerEntry = "#EXTINF";
 
   String source;
-  final List<_PlaylistEntry> _entries = [];
+  final List<PlaylistEntry> _entries = [];
+
+  get length => _entries.length;
+  operator [](int i) => _entries[i];
+
+  flip(int indexA, int indexB) {
+    if(indexA < 0) {
+      indexA = _entries.length + indexA;
+    }
+    if(indexB < 0) {
+      indexB = _entries.length + indexB;
+    }
+    if(indexA >= _entries.length) {
+      indexA = indexA - _entries.length;
+    }
+    if(indexB >= _entries.length) {
+      indexB = indexB - _entries.length;
+    }
+
+    if(indexA != indexB) {
+      PlaylistEntry a = _entries[indexA];
+
+      _entries[indexA] = _entries[indexB];
+      _entries[indexB] = a;
+    }
+  }
+
+  PlaylistEntry get(int index) {
+    return _entries[index];
+  }
+
+  removeAt(int index) {
+    _entries.removeAt(index);
+  }
 
   M3U(this.source, {bool readExisting = true}){
     File src = File(source);
@@ -43,7 +76,7 @@ class M3U {
             String valid = line.split(",")[1];
             author = valid.split(" - ")[0];
             title = valid.split(" - ")[1];
-          } else {
+          } else if (line.isNotEmpty) {
             try {
               debugPrint(line);
               File src = File(line);
@@ -53,7 +86,7 @@ class M3U {
 
               String titleLoc = title ?? fileNameNoExtension.split(" - ").first;
               String authorLoc = author ?? fileNameNoExtension.split(" - ")[1];
-              _entries.add(_PlaylistEntry(title: titleLoc, author: authorLoc, source: line));
+              _entries.add(PlaylistEntry(title: titleLoc, author: authorLoc, source: line));
             } on FileSystemException catch (_, e) {
               //Not a valid file string...
             } finally {
@@ -74,7 +107,7 @@ class M3U {
         return;
       }
     }
-    _entries.add(_PlaylistEntry(title: title, author: author, source: source));
+    _entries.add(PlaylistEntry(title: title, author: author, source: source));
   }
 
   String getAsString() {

@@ -4,18 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:yt_dlf/utils/m3u.dart';
-
-enum Level {
-  WARNING,
-  ERROR,
-}
-
-class ErrorMessage {
-  String message;
-  Level level;
-
-  ErrorMessage({required this.message, required this.level});
-}
+import 'package:yt_dlf/utils/error_message.dart';
 
 class DownloadPlaylistView extends StatefulWidget {
   const DownloadPlaylistView({super.key});
@@ -105,7 +94,6 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
       } else {
         streamInfo = videoManifest.muxed.withHighestBitrate();
       }
-      print(streamInfo);
 
       var stream = yt.videos.streamsClient.get(streamInfo);
 
@@ -127,7 +115,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           await fileStream.flush();
           await fileStream.close();
 
-          m3u.addEntry(videoTitle, "$fileOutputDirectory/$name.$extension");
+          m3u.addEntry(videoAuthor, videoTitle, "$fileOutputDirectory/$name.$extension");
         } catch (e) {
           setState(() {
             errorMessages = [...errorMessages, ErrorMessage(message: "Couldn't save file : ${video.id}", level: Level.ERROR)];
@@ -142,7 +130,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           errorMessages = [...errorMessages, ErrorMessage(message: "Video : ${video.id} already exists", level: Level.WARNING)];
         });
 
-        m3u.addEntry(videoTitle, "$fileOutputDirectory/$name.$extension");
+        m3u.addEntry(videoAuthor, videoTitle, "$fileOutputDirectory/$name.$extension");
       }
     }
 
@@ -174,13 +162,6 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
         ElevatedButton(
           onPressed: () async {
             String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-
-            if (selectedDirectory == null) {
-              debugPrint("User cancelled");
-            } else {
-              debugPrint("User picked directory : $selectedDirectory");
-            }
-
             setState(() {
               fileOutputDirectory = selectedDirectory;
             });
@@ -232,7 +213,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           child: Expanded(child: SingleChildScrollView(
             child: Column(children: [
               for(ErrorMessage message in errorMessages)...[
-                Text(message.message, style: TextStyle(color: message.level == Level.ERROR ? Colors.red : Colors.orange),)
+                Text(message.message, style: TextStyle(color: message.color),)
               ],
             ],),
           ),),

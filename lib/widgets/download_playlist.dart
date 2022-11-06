@@ -2,9 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:async/async.dart';
 import 'package:yt_dlf/utils/m3u.dart';
 
 enum Level {
@@ -27,27 +25,17 @@ class DownloadPlaylistView extends StatefulWidget {
 }
 
 class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
-  CancelableOperation? _downloadOperation;
+  //Playlist details
+  var url;
   bool onlyAudio = true;
   String? fileOutputDirectory;
+
+  //Download status
   bool downloading = false;
-  bool cancelled = false;
-  var url;
   int count = 0;
   int counter = 0;
   String currentName = '';
   List<ErrorMessage> errorMessages = [];
-
-  Future cancelDownload(bool deleteDownloaded) async {
-    final downloadOperation = _downloadOperation;
-    if(downloadOperation != null) {
-      if(deleteDownloaded) {
-
-      }
-
-      downloadOperation.cancel();
-    }
-  }
 
   Future downloadPlaylist() async {
     setState(() {
@@ -161,7 +149,6 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
     yt.close();
     m3u.write();
 
-    //Finally set the state as done
     setState(() {
       count = 0;
       counter = 0;
@@ -231,17 +218,8 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           ),
         ),
         ElevatedButton(
-          //TODO allow to cancel download
-          /*onPressed: () {
-                    if (!downloading) {
-                      downloadPlaylist();
-                    } else {
-
-                    }
-                  },*/
-          onPressed: fileOutputDirectory == null || downloading ? null : () {
-            downloadPlaylist();
-          },
+          style: ElevatedButton.styleFrom(backgroundColor: downloading ? Colors.blueGrey : Colors.blue),
+          onPressed: fileOutputDirectory == null || downloading ? null : downloadPlaylist,
           child: Text(fileOutputDirectory == null ? "Select output directory before downloading" : downloading ? "Downloading" : "Download Playlist"),
         ),
         if(downloading) ... [

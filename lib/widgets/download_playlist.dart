@@ -68,7 +68,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
 
     await for (var video in yt.playlists.getVideos(playlist.id)) {
       var videoTitle = video.title.replaceAll(RegExp('[^A-Z a-z 0-9]'), "");
-      var videoAuthor = video.author;
+      var videoAuthor = video.author.replaceAll(RegExp('[^A-Z a-z 0-9]'), "");
       setState(() {
         currentName = videoTitle;
         counter += 1;
@@ -115,7 +115,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           await fileStream.flush();
           await fileStream.close();
 
-          m3u.addEntry(videoAuthor, videoTitle, "$fileOutputDirectory/$name.$extension");
+          m3u.addEntry(videoTitle, videoAuthor, "$fileOutputDirectory/$name.$extension");
         } catch (e) {
           setState(() {
             errorMessages = [...errorMessages, ErrorMessage(message: "Couldn't save file : ${video.id}", level: Level.ERROR)];
@@ -130,7 +130,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           errorMessages = [...errorMessages, ErrorMessage(message: "Video : ${video.id} already exists", level: Level.WARNING)];
         });
 
-        m3u.addEntry(videoAuthor, videoTitle, "$fileOutputDirectory/$name.$extension");
+        m3u.addEntry(videoTitle, videoAuthor, "$fileOutputDirectory/$name.$extension");
       }
     }
 

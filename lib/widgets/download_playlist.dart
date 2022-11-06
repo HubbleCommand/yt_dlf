@@ -160,7 +160,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           },
         ),
         ElevatedButton(
-          onPressed: () async {
+          onPressed: downloading ? null : () async {
             String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
             setState(() {
               fileOutputDirectory = selectedDirectory;

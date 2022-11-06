@@ -142,6 +142,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
       counter = 0;
       currentName = '';
       downloading = false;
+      errorMessages = [...errorMessages, ErrorMessage(message: "Finished downloading", level: Level.INFO)];
     });
   }
 

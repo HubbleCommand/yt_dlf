@@ -49,6 +49,10 @@ class _EditPlaylistViewState extends State<EditPlaylistView> {
               minimumSize: const Size.fromHeight(50), // NEW
             ),
             onPressed: () async {
+              //Apparently don't need
+              //https://github.com/miguelpruivo/flutter_file_picker/issues/1093
+              //But still sometimes return cached paths instead of the real path
+              await FilePicker.platform.clearTemporaryFiles();
               FilePickerResult? result = await FilePicker.platform.pickFiles(
                 type: FileType.custom,
                 allowMultiple: true,
@@ -65,12 +69,11 @@ class _EditPlaylistViewState extends State<EditPlaylistView> {
                   } else {
                     String filename = element.uri.pathSegments.last.split(".").first;
                     data?.addEntry(M3U.filenameToTitle(filename), M3U.filenameToAuthor(filename), element.path);
-
-                    setState(() {
-                      data = data;
-                    });
                   }
                 }
+                setState(() {
+                  data = data;
+                });
               } else {
                 // User canceled the picker
               }

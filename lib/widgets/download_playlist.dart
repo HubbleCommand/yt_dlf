@@ -78,7 +78,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
       try {
         //TODO handle if is age restricted, pass token or use HTTPClient
         videoManifest = await yt.videos.streamsClient.getManifest(video.id);
-        debugPrint(videoManifest.toString());
+        //debugPrint(videoManifest.toString());
       } catch (e) {
         setState(() {
           errorMessages = [...errorMessages, ErrorMessage(message: "Couldn't download video : ${video.id}", level: Level.ERROR)];
@@ -108,7 +108,6 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
         debugPrint("DOESN'T EXIST, DOWNLOADING");
         //If the file exists, then we don't need to download
         var fileStream = file.openWrite();
-        debugPrint("STREAM $fileStream");
 
         try {
           await stream.pipe(fileStream);
@@ -134,6 +133,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
       }
     }
 
+    errorMessages = [...errorMessages, ErrorMessage(message: "Writing playlist file", level: Level.INFO)];
     yt.close();
     m3u.write();
 
@@ -205,9 +205,9 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           child: Text(fileOutputDirectory == null ? "Select output directory before downloading" : downloading ? "Downloading" : "Download Playlist"),
         ),
         if(downloading) ... [
-          const CircularProgressIndicator(),
           Text("Downloading $counter / $count", textAlign: TextAlign.center),
           Text(currentName, textAlign: TextAlign.center),
+          const CircularProgressIndicator(),
         ],
         Visibility(
           visible: errorMessages.isEmpty ? false : true,

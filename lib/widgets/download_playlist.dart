@@ -98,7 +98,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
       var stream = yt.videos.streamsClient.get(streamInfo);
 
       var extension = streamInfo.codec.subtype;
-      var name = "$videoTitle - $videoAuthor";
+      var name = M3U.makeEntryName(videoTitle, videoAuthor);
 
       var path = "$fileOutputDirectory/$name.$extension";
       debugPrint(path);

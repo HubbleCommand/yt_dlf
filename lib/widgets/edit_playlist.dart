@@ -63,10 +63,8 @@ class _EditPlaylistViewState extends State<EditPlaylistView> {
                   if(element.uri.pathSegments.last.split(".")[1] == "m3u" || element.uri.pathSegments.last.split(".")[1] == "m3u8"){
 
                   } else {
-                    String fileNameNoExtension = element.uri.pathSegments.last.split(".").first;
-
-                    debugPrint("Files :  : ${element.path})}");
-                    data?.addEntry(fileNameNoExtension.split(" - ").first, fileNameNoExtension.split(" - ")[1], element.path);
+                    String filename = element.uri.pathSegments.last.split(".").first;
+                    data?.addEntry(M3U.filenameToTitle(filename), M3U.filenameToAuthor(filename), element.path);
 
                     setState(() {
                       data = data;

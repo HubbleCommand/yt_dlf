@@ -78,6 +78,7 @@ class M3U {
 
   M3U(this.source, {bool readExisting = true}){
     File src = File(source);
+    src.createSync(recursive: true);
 
     if(readExisting) {
       if(src.existsSync()) {

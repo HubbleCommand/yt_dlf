@@ -112,7 +112,7 @@ class M3U {
 
   String getAsString() {
     String result = "$headerFile\n\n";
-    for(int i = 0; i < _entries.length - 1; i++) {
+    for(int i = 0; i < _entries.length; i++) {
       result += "$headerEntry:$i, ${_entries[i].author} - ${_entries[i].title}\n";
       result += '${_entries[i].source}\n';
     }

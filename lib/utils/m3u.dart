@@ -30,6 +30,22 @@ class M3U {
   get length => _entries.length;
   operator [](int i) => _entries[i];
 
+  static String filenameToTitle(String name) {
+    List<String> split = name.split(" - ");
+
+    return split.length == 2 ? split.first : name;
+  }
+
+  static String filenameToAuthor(String name) {
+    List<String> split = name.split(" - ");
+
+    return split.length == 2 ? split[1] : "Unknown";
+  }
+
+  static String makeEntryName(String title, String author) {
+    return '$author - $title';
+  }
+
   flip(int indexA, int indexB) {
     if(indexA < 0) {
       indexA = _entries.length + indexA;
@@ -113,7 +129,7 @@ class M3U {
   String getAsString() {
     String result = "$headerFile\n\n";
     for(int i = 0; i < _entries.length; i++) {
-      result += "$headerEntry:$i, ${_entries[i].author} - ${_entries[i].title}\n";
+      result += "$headerEntry:$i, ${makeEntryName(_entries[i].title, _entries[i].author)}\n";
       result += '${_entries[i].source}\n';
     }
     return result;

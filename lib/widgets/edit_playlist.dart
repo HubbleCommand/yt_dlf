@@ -33,6 +33,10 @@ class _EditPlaylistViewState extends State<EditPlaylistView> {
         ],
 
         if(data != null) ... [
+          Padding(
+            padding: const EdgeInsets.all(15), //apply padding to all four sides
+            child: Text("Editing ${data?.source}"),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(50), // NEW

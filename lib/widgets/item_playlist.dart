@@ -30,23 +30,27 @@ class _PlaylistEntryViewState extends State<PlaylistEntryView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const Text("Source"),
-                Text(entry.source, style: const TextStyle(color: Colors.grey),),
-                TextFormField(
-                  enabled: false,
-                  initialValue: entry.source,
+                const Padding(
+                  padding: EdgeInsets.all(15), //apply padding to all four sides
+                  child: Text("Source"),
                 ),
-                const Text("Author"),
+                Text(entry.source, style: const TextStyle(color: Colors.grey),),
+                const Padding(
+                  padding: EdgeInsets.all(15), //apply padding to all four sides
+                  child: Text("Author"),
+                ),
                 TextFormField(
                   initialValue: entry.author,
                   onChanged: (value) => entry = PlaylistEntry(title: entry.title, author: value, source: entry.source),
                 ),
-                const Text("Title"),
+                const Padding(
+                  padding: EdgeInsets.all(15), //apply padding to all four sides
+                  child: Text("Title"),
+                ),
                 TextFormField(
                   initialValue: entry.title,
                   onChanged: (value) => entry = PlaylistEntry(title: value, author: entry.author, source: entry.source),
                 ),
-
               ],
             ),
           ),),

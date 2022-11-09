@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:yt_dlf/utils/m3u.dart';
+import 'package:yt_dlf/widgets/item_playlist.dart';
 import 'package:yt_dlf/widgets/new_edit_menu.dart';
 
 class EditPlaylistView extends StatefulWidget {
@@ -93,6 +94,18 @@ class _EditPlaylistViewState extends State<EditPlaylistView> {
                   itemCount: data!.length,
                   itemBuilder: (context, index) {
                     return ListTile(
+                      onTap: data == null ? null : () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PlaylistEntryView(entry : data!.get(index))),
+                        );
+                        if(result is PlaylistEntry) {
+                          data!.setAt(index, result);
+                          setState(() {
+                            data = data;
+                          });
+                        }
+                      },
                       leading: Text('${index + 1}'),
                       title: Text(data!.get(index).title),
                       subtitle: Text(data!.get(index).author),

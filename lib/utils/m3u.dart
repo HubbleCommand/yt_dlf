@@ -72,6 +72,10 @@ class M3U {
     return _entries[index];
   }
 
+  void setAt(int index, PlaylistEntry value) {
+    _entries[index] = value;
+  }
+
   removeAt(int index) {
     _entries.removeAt(index);
   }

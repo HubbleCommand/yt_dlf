@@ -37,19 +37,19 @@ class _PlaylistEntryViewState extends State<PlaylistEntryView> {
                 Text(entry.source, style: const TextStyle(color: Colors.grey),),
                 const Padding(
                   padding: EdgeInsets.all(15), //apply padding to all four sides
-                  child: Text("Author"),
-                ),
-                TextFormField(
-                  initialValue: entry.author,
-                  onChanged: (value) => entry = PlaylistEntry(title: entry.title, author: value, source: entry.source),
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(15), //apply padding to all four sides
                   child: Text("Title"),
                 ),
                 TextFormField(
                   initialValue: entry.title,
                   onChanged: (value) => entry = PlaylistEntry(title: value, author: entry.author, source: entry.source),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(15), //apply padding to all four sides
+                  child: Text("Author"),
+                ),
+                TextFormField(
+                  initialValue: entry.author,
+                  onChanged: (value) => entry = PlaylistEntry(title: entry.title, author: value, source: entry.source),
                 ),
               ],
             ),

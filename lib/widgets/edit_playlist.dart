@@ -15,6 +15,71 @@ class EditPlaylistView extends StatefulWidget {
 class _EditPlaylistViewState extends State<EditPlaylistView> {
   M3U? data;
 
+  Widget _getBody() {
+    if (!(data!.length > 0)) {
+      return const Center(child: Text("No entries yet!"));
+    } else {
+      return SingleChildScrollView(
+          child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            //Needed for mobile https://stackoverflow.com/questions/59510116/the-singlechildscrollview-is-not-scrollable
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: data!.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                onTap: data == null ? null : () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>
+                        PlaylistEntryView(entry: data!.get(index))),
+                  );
+                  if (result is PlaylistEntry) {
+                    data!.setAt(index, result);
+                    setState(() {
+                      data = data;
+                    });
+                  }
+                },
+                leading: Text('${index + 1}'),
+                title: Text(data!.get(index).title),
+                subtitle: Text(data!.get(index).author),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          setState(() {
+                            data!.removeAt(index);
+                          });
+                        }
+                    ),
+                    IconButton(
+                        icon: const Icon(Icons.arrow_upward),
+                        onPressed: () {
+                          setState(() {
+                            data!.flip(index, index - 1);
+                          });
+                        }
+                    ),
+                    IconButton(
+                        icon: const Icon(Icons.arrow_downward),
+                        onPressed: () {
+                          setState(() {
+                            data!.flip(index, index + 1);
+                          });
+                        }
+                    ),
+                  ],
+                ),
+              );
+            },
+          )
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -86,62 +151,7 @@ class _EditPlaylistViewState extends State<EditPlaylistView> {
             child: const Text("Add items"),
           ),
           Expanded(
-            child: SingleChildScrollView(
-                child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(), //Needed for mobile https://stackoverflow.com/questions/59510116/the-singlechildscrollview-is-not-scrollable
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: data!.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: data == null ? null : () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => PlaylistEntryView(entry : data!.get(index))),
-                        );
-                        if(result is PlaylistEntry) {
-                          data!.setAt(index, result);
-                          setState(() {
-                            data = data;
-                          });
-                        }
-                      },
-                      leading: Text('${index + 1}'),
-                      title: Text(data!.get(index).title),
-                      subtitle: Text(data!.get(index).author),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: () {
-                              setState(() {
-                                data!.removeAt(index);
-                              });
-                            }
-                          ),
-                          IconButton(
-                              icon: const Icon(Icons.arrow_upward),
-                              onPressed: () {
-                                setState(() {
-                                  data!.flip(index, index - 1);
-                                });
-                              }
-                          ),
-                          IconButton(
-                              icon: const Icon(Icons.arrow_downward),
-                              onPressed: () {
-                                setState(() {
-                                  data!.flip(index, index + 1);
-                                });
-                              }
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                )
-            ),
+              child: _getBody()
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(

@@ -15,6 +15,7 @@ class _NewEditPlaylistViewState extends State<NewEditPlaylistView> {
   M3U? data;
   String? outputFileName;
   String? outputDirectory;
+  final ValueNotifier<bool> _loadingNotifier = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +27,32 @@ class _NewEditPlaylistViewState extends State<NewEditPlaylistView> {
             minimumSize: const Size.fromHeight(40), // NEW
           ),
           onPressed: () async {
+            _loadingNotifier.value = true;
+            await FilePicker.platform.clearTemporaryFiles();
             FilePickerResult? result = await FilePicker.platform.pickFiles(
               type: FileType.custom,
               allowedExtensions: ['m3u', 'm3u8'],
             );
 
             //Load playlist...
-            setState(() {
-              if(result != null && result.files.single.path != null) {
-                debugPrint("Loaded : ${result.files.single.path}");
-                data = M3U(result.files.single.path!);
+            if(result != null && result.files.single.path != null) {
+              debugPrint("Loaded : ${result.files.single.path}");
+              data = M3U(result.files.single.path!);
+              if(data != null){
+                data?.loadFromSource().then((value){
+                  _loadingNotifier.value = false;
+                  widget.m3uCallback(data);
+                });
               } else {
-                debugPrint("No playlist file found");
-                data = null;
+                _loadingNotifier.value = false;
+                widget.m3uCallback(data);
               }
-
+            } else {
+              debugPrint("No playlist file found");
+              data = null;
+              _loadingNotifier.value = false;
               widget.m3uCallback(data);
-            });
+            }
           },
           child: const Text("Edit Existing Playlist"),
         ),
@@ -86,7 +96,7 @@ class _NewEditPlaylistViewState extends State<NewEditPlaylistView> {
                     //Create file & return M3U
                     try {
                       debugPrint("Creating new .m3u at : $outputDirectory/$outputFileName.m3u");
-                      var m3u = M3U("$outputDirectory/$outputFileName.m3u", readExisting: false);
+                      var m3u = M3U("$outputDirectory/$outputFileName.m3u");
                       data = m3u;
                       widget.m3uCallback(data);
                       return;
@@ -107,6 +117,18 @@ class _NewEditPlaylistViewState extends State<NewEditPlaylistView> {
             ),
           ],),
         ),
+        ValueListenableBuilder(valueListenable: _loadingNotifier, builder: (BuildContext context, bool loading, Widget? child) {
+          debugPrint("Loading : $loading");
+          debugPrint("Loading : ${_loadingNotifier.value}");
+
+          return Visibility(
+            visible: loading,
+            child: const Padding(
+              padding: EdgeInsets.all(15), //apply padding to all four sides
+              child: CircularProgressIndicator(),
+            ),
+          );
+        })
       ],
     );
   }

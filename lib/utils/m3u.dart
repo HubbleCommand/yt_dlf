@@ -80,45 +80,45 @@ class M3U {
     _entries.removeAt(index);
   }
 
-  M3U(this.source, {bool readExisting = true}){
+  M3U(this.source);
+
+  Future<void> loadFromSource() async {
     File src = File(source);
-    src.createSync(recursive: true);
 
-    if(readExisting) {
-      if(src.existsSync()) {
-        //If the file already exists, we can read the data present
+    if(src.existsSync()) {
+      //If the file already exists, we can read the data present
 
-        String? title;
-        String? author;
-        src.openRead().transform(utf8.decoder).transform(const LineSplitter()).forEach((line) {
-          if(line.startsWith(headerFile)){
-            //continue;
-          } else if (line.startsWith(headerEntry)){
-            String valid = line.split(",")[1];
-            author = valid.split(" - ")[0];
-            title = valid.split(" - ")[1];
-          } else if (line.isNotEmpty) {
-            try {
-              debugPrint(line);
-              File src = File(line);
+      String? title;
+      String? author;
+      await src.openRead().transform(utf8.decoder).transform(const LineSplitter()).forEach((line) {
+        if(line.startsWith(headerFile)){
+          //continue;
+        } else if (line.startsWith(headerEntry)){
+          String valid = line.split(",")[1];
+          author = valid.split(" - ")[0];
+          title = valid.split(" - ")[1];
+        } else if (line.isNotEmpty) {
+          try {
+            File src = File(line);
 
-              //Split filename to get title & author
-              String fileNameNoExtension = src.uri.pathSegments.last.split(".").first;
+            //Split filename to get title & author
+            String fileNameNoExtension = src.uri.pathSegments.last.split(".").first;
 
-              String titleLoc = title ?? fileNameNoExtension.split(" - ").first;
-              String authorLoc = author ?? fileNameNoExtension.split(" - ")[1];
-              _entries.add(PlaylistEntry(title: titleLoc, author: authorLoc, source: line));
-            } on FileSystemException catch (_, e) {
-              //Not a valid file string...
-            } finally {
-              title = author = null;
-            }
+            String titleLoc = title ?? fileNameNoExtension.split(" - ").first;
+            String authorLoc = author ?? fileNameNoExtension.split(" - ")[1];
+            _entries.add(PlaylistEntry(title: titleLoc, author: authorLoc, source: line));
+          } on FileSystemException catch (_, e) {
+            debugPrint("EXCEPTION PARSING STRING $line");
+            //Not a valid file string...
+          } finally {
+            title = author = null;
           }
-        });
-      }
+        }
+      });
+    } else {
+      src.createSync(recursive: true);
     }
-
-    debugPrint(getAsString());
+    debugPrint("Finished reading file");
   }
 
   addEntry(String title, String author, String source) {

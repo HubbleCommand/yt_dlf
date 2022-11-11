@@ -87,12 +87,8 @@ class _EditPlaylistViewState extends State<EditPlaylistView> {
       children: <Widget>[
         if(data == null) ... [
           NewEditPlaylistView(m3uCallback: (M3U? data) {
+            debugPrint("Data is loaded in EditPlaylist, is of length : ${data?.length}");
             setState(() {
-              debugPrint("Got data in main view : $data");
-              if (data != null) {
-                debugPrint("Got data in main view : ${data.getAsString()}");
-              }
-
               this.data = data;
             });
           })

@@ -30,6 +30,9 @@ class M3U {
   get length => _entries.length;
   operator [](int i) => _entries[i];
 
+  ///TODO maybe change how this is done
+  /// NOTE for keeping index in filename, FORGET
+  /// The order is kept in the playlist file
   static String filenameToTitle(String name) {
     List<String> split = name.split(" - ");
 

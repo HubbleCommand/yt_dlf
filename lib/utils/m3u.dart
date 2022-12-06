@@ -137,6 +137,8 @@ class M3U {
   String getAsString() {
     String result = "$headerFile\n\n";
     for(int i = 0; i < _entries.length; i++) {
+      debugPrint("Writing : $headerEntry:$i, ${_entries[i].author} - ${_entries[i].title}");
+      debugPrint("Source : ${_entries[i].source}\n");
       result += "$headerEntry:$i, ${makeEntryName(_entries[i].title, _entries[i].author)}\n";
       result += '${_entries[i].source}\n';
     }

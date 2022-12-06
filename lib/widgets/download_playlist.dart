@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:audiotagger/audiotagger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -69,6 +70,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
     await for (var video in yt.playlists.getVideos(playlist.id)) {
       var videoTitle = video.title.replaceAll(RegExp('[^A-Z a-z 0-9]'), "");
       var videoAuthor = video.author.replaceAll(RegExp('[^A-Z a-z 0-9]'), "");
+      //video.thumbnails.highResUrl.
       setState(() {
         currentName = videoTitle;
         counter += 1;
@@ -78,7 +80,7 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
       try {
         //TODO handle if is age restricted, pass token or use HTTPClient
         videoManifest = await yt.videos.streamsClient.getManifest(video.id);
-        //debugPrint(videoManifest.toString());
+        debugPrint(videoManifest.toString());
       } catch (e) {
         setState(() {
           errorMessages = [...errorMessages, ErrorMessage(message: "Couldn't download video : ${video.id}", level: Level.ERROR)];
@@ -115,6 +117,18 @@ class _DownloadPlaylistViewState extends State<DownloadPlaylistView> {
           await fileStream.close();
 
           m3u.addEntry(videoTitle, videoAuthor, "$fileOutputDirectory/$name.$extension");
+
+          //If want to write thumbnails:
+          // https://github.com/Samurai016/Audiotagger/tree/master/android/src/main/java/org/jaudiotagger/tag/mp4
+          // https://github.com/NiKoTron/dart-tags/tree/master/lib/src
+          //Write thumbnail
+          final tagger = Audiotagger();
+          //await tp.getTagsFromByteArray(file.readAsBytes()).then((l) => l.forEach((f) => debugPrint(f.toString())));
+          /*final result = await tagger.writeTag(
+              path: path,
+              tagField: "artwork",
+              value: video.thumbnails.highResUrl
+          );*/
         } catch (e) {
           setState(() {
             errorMessages = [...errorMessages, ErrorMessage(message: "Couldn't save file : ${video.id}", level: Level.ERROR)];
